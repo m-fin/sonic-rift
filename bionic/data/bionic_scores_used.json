@@ -1,0 +1,98 @@
+[
+ {
+  "order": 1,
+  "system": "Pancreas / insulin",
+  "level": 5,
+  "enters_sec": 9.6
+ },
+ {
+  "order": 2,
+  "system": "Ears / cochlear",
+  "level": 5,
+  "enters_sec": 14.4
+ },
+ {
+  "order": 3,
+  "system": "Joints",
+  "level": 5,
+  "enters_sec": 19.2
+ },
+ {
+  "order": 4,
+  "system": "Heart",
+  "level": 4,
+  "enters_sec": 24.0
+ },
+ {
+  "order": 5,
+  "system": "Arms / hands",
+  "level": 4,
+  "enters_sec": 28.8
+ },
+ {
+  "order": 6,
+  "system": "Legs / knees",
+  "level": 4,
+  "enters_sec": 33.6
+ },
+ {
+  "order": 7,
+  "system": "Eyes / retina",
+  "level": 4,
+  "enters_sec": 38.4
+ },
+ {
+  "order": 8,
+  "system": "Blood vessels",
+  "level": 4,
+  "enters_sec": 43.2
+ },
+ {
+  "order": 9,
+  "system": "Spine / nerve interfaces",
+  "level": 4,
+  "enters_sec": 48.0
+ },
+ {
+  "order": 10,
+  "system": "Bones / skeleton",
+  "level": 4,
+  "enters_sec": 52.8
+ },
+ {
+  "order": 11,
+  "system": "Kidneys",
+  "level": 3,
+  "enters_sec": 57.6
+ },
+ {
+  "order": 12,
+  "system": "Skin / touch",
+  "level": 3,
+  "enters_sec": 62.4
+ },
+ {
+  "order": 13,
+  "system": "Lungs",
+  "level": 2,
+  "enters_sec": 67.2
+ },
+ {
+  "order": 14,
+  "system": "Liver",
+  "level": 2,
+  "enters_sec": 72.0
+ },
+ {
+  "order": 15,
+  "system": "Bladder",
+  "level": 2,
+  "enters_sec": 76.8
+ },
+ {
+  "order": 16,
+  "system": "Muscles",
+  "level": 1,
+  "enters_sec": 81.6
+ }
+]
