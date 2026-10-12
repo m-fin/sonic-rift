@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Sonic Rift: Bionic Dawn</title>
+<script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script></head>
+<body style="background:#000;color:#f7931a;font-family:monospace;text-align:center;padding-top:20vh">
+<h1>SONIC RIFT // Bionic Dawn</h1><button id="b" style="font-size:2em;background:#f7931a;border:0;padding:.4em 1em">PLAY</button>
+<script>
+const S={"title": "Bionic Dawn", "bpm": 110, "bars": 30, "bass": [40, null, 40, 52, 43, null, 43, 47], "lead": [64, null, 67, 71, null, null, 69, null, 67, null, 64, null, 62, null, null, null], "chords": [[52, 55, 59, 62], [48, 52, 55, 59], [43, 47, 50, 54], [45, 48, 52, 55]], "wave": "tri"};const f=n=>Tone.Frequency(n,"midi");
+document.getElementById('b').onclick=async()=>{await Tone.start();Tone.Transport.cancel();Tone.Transport.bpm.value=S.bpm;
+const echo=new Tone.FeedbackDelay("8n.",0.3).toDestination();
+const kick=new Tone.MembraneSynth().toDestination();
+const clap=new Tone.NoiseSynth({envelope:{decay:.15,sustain:0}}).toDestination();clap.volume.value=-12;
+const hat=new Tone.MetalSynth({envelope:{decay:.05}}).toDestination();hat.volume.value=-26;
+const bass=new Tone.MonoSynth({oscillator:{type:"sawtooth"},filter:{Q:2},filterEnvelope:{baseFrequency:120,octaves:2}}).toDestination();bass.volume.value=-8;
+const pad=new Tone.PolySynth(Tone.Synth,{oscillator:{type:"fatsawtooth"},envelope:{attack:.4,release:.4}}).toDestination();pad.volume.value=-20;
+const typ={saw:"sawtooth",square:"square",tri:"triangle"}[S.wave];
+const lead=new Tone.Synth({oscillator:{type:typ},envelope:{release:.2}}).connect(echo);lead.volume.value=-14;
+for(let b=0;b<S.bars;b++){const brk=b>=16&&b<20,intro=b<4,outro=b>=S.bars-4,bt=b+"m";
+ for(let q=0;q<4;q++){const t=`${b}:${q}`;if(!brk)kick.triggerAttackRelease("C1","8n",t);
+  if((q==1||q==3)&&!intro)clap.triggerAttackRelease("16n",t);if(!intro||b>=2)hat.triggerAttackRelease("C6","32n",`${b}:${q}:2`);}
+ if((!intro||b>=2)&&!brk)S.bass.forEach((n,k)=>{if(n!=null)bass.triggerAttackRelease(f(n-12),"16n",`${b}:0:${k*2}`)});
+ pad.triggerAttackRelease(S.chords[b%4].map(f),"1m",bt);
+ if(b>=8&&!outro)for(let k=0;k<8;k++){const n=S.lead[(b%2)*8+k];if(n!=null)lead.triggerAttackRelease(f(n),"8n",`${b}:0:${k*2}`)}}
+Tone.Transport.stop();Tone.Transport.position=0;Tone.Transport.start();};
+</script><p>Code-generated sketch by Sonic Rift (Tone.js). Shaped and picked by Frog.</p></body></html>
