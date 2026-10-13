@@ -11,6 +11,7 @@ This repo holds music made with code: the scripts that build the sounds, sketche
 - `bionic/` – the code for the track **Bionic Body**. Each of the 16 body systems on the Bionic Body tracker (https://m-fin.github.io/bionic-body) becomes an instrument, and its 0–5 readiness score sets how loud it is.
   - `bionic/data/` – the tracker data and the scores the track used.
 - `game/` – game music and sound effects: the title loop, Neon Snake, and the DRIFTHOME cabin scene. Scripts plus OGG loops/sounds and MP3 previews.
+- `ambient/` – `make.py` builds the seamless ambient loops for **Space Drift** (D major, 60 BPM) and **Machine Sleep** (A minor, 54 BPM). It reuses the synth helpers in `game/premiere/make.py`.
 
 ## How the sounds are made
 
