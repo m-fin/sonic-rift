@@ -78,5 +78,5 @@ for slug,s in SONGS.items():
   html=open('template.html').read().replace('__TITLE__',s['title']).replace('__DATA__',json.dumps(s))
   open(slug+'.html','w').write(html)
   print(slug,round(dur,1),'s')
-idx="<html><body style='background:#000;color:#f7931a;font-family:monospace'><h1>Sonic Rift: code sketches</h1>"+"".join(f"<p><a style='color:#f7931a' href='{p}.html'>{t}</a></p>" for p,t,_ in pages)+"</body></html>"
+idx="<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Sonic Rift: code sketches</title></head><body style='background:#000;color:#f7931a;font-family:monospace'><h1>Sonic Rift: code sketches</h1>"+"".join(f"<p><a style='color:#f7931a' href='{p}.html'>{t}</a></p>" for p,t,_ in pages)+"</body></html>"
 open('index.html','w').write(idx)
