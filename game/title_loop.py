@@ -1,4 +1,5 @@
-import numpy as np, soundfile as sf, subprocess
+import numpy as np, soundfile as sf, subprocess, os, tempfile
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 SR=44100; BPM=150; st=60/BPM/4   # 16th step
 mtof=lambda n:440*2**((n-69)/12)
 def sq(f,n,duty=.5):
@@ -40,6 +41,6 @@ mix/=np.max(np.abs(mix))*1.1
 sf.write('title_loop.wav',mix,SR)
 subprocess.run(['ffmpeg','-y','-loglevel','error','-i','title_loop.wav','-c:a','libvorbis','-q:a','6','title_loop.ogg'],check=True)
 prev=np.concatenate([mix,mix]); n=int(3*SR); prev[-n:]*=np.linspace(1,0,n)
-sf.write('/tmp/p.wav',prev,SR)
-subprocess.run(['ffmpeg','-y','-loglevel','error','-i','/tmp/p.wav','-b:a','192k','title_loop_preview.mp3'],check=True)
+tmp=os.path.join(tempfile.mkdtemp(),'p.wav'); sf.write(tmp,prev,SR)
+subprocess.run(['ffmpeg','-y','-loglevel','error','-i',tmp,'-b:a','192k','title_loop_preview.mp3'],check=True)
 print(round(L/SR,2))

@@ -28,6 +28,7 @@ def echo(x,d,fb,n=5):
     for r in range(1,n): y[k*r:]+=x[:-k*r]*fb**r
     return y
 # (1) theme
+import os; os.chdir(os.path.dirname(os.path.abspath(__file__)))  # outputs next to this script (after the shared helpers ambient/make.py reuses)
 mb=[];step=beat/2
 for i,n in enumerate(THEME_RES[:6]): mb.append((mbox(mtof(n+12)),i*step,1))
 out('theme_musicbox',echo(place(int((6*step+2)*SR),mb,False),beat*.75,.3))

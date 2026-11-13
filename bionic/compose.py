@@ -1,4 +1,5 @@
-import numpy as np, json, soundfile as sf, subprocess
+import numpy as np, json, soundfile as sf, subprocess, os, tempfile
+os.chdir(os.path.dirname(os.path.abspath(__file__)))  # data/, ../sounds/ and vox_*.wav are relative to bionic/
 SR=44100; rng=np.random.default_rng(16)
 d=json.load(open('data/bionic_tracker_data.json')); E=d['entries']
 for e in E: e['lv']=int(e['level'])
@@ -69,7 +70,7 @@ add(robot(ld('vox_blake.wav'),1.0),endb*bar,.6)
 add(robot(ld('vox_blake.wav'),.35),endb*bar+bar/2,.18)
 d2=int(beat*.75*SR); out=mix.copy(); out[d2:]+=mix[:-d2]*.25
 out=np.tanh(out*1.3); out/=np.max(np.abs(out))*1.05
-sf.write('/tmp/bionic.wav',out,SR)
-subprocess.run(['ffmpeg','-y','-loglevel','error','-i','/tmp/bionic.wav','-b:a','192k','bionic-body.mp3'],check=True)
+tmp=os.path.join(tempfile.mkdtemp(),'bionic.wav'); sf.write(tmp,out,SR)
+subprocess.run(['ffmpeg','-y','-loglevel','error','-i',tmp,'-b:a','192k','bionic-body.mp3'],check=True)
 json.dump([{'order':i+1,'system':e['system'],'level':e['lv'],'enters_sec':round((INTRO+PER*i)*bar,1)} for i,e in enumerate(order)],open('data/bionic_scores_used.json','w'),indent=1)
 print(round(len(out)/SR,1))
