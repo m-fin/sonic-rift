@@ -1,6 +1,6 @@
-# Sonic Rift
+# sonicrift
 
-Sonic Rift is Matthew "Frog" Finley's electronic music project: https://soundcloud.com/sonicrift
+sonicrift is Matthew "Frog" Finley's electronic music project: https://soundcloud.com/sonicrift
 
 This repo holds music made with code: the scripts that build the sounds, sketches and tracks, plus small previews.
 
