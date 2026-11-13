@@ -1,4 +1,5 @@
-import numpy as np, json, wave, subprocess
+import numpy as np, json, wave, subprocess, os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))  # outputs go next to this script
 SR=44100
 def mtof(n): return 440*2**((n-69)/12)
 SONGS={

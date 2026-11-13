@@ -1,0 +1,34 @@
+name: Generators
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  render:
+    # Runs every generator from outside the repo (cwd = /) to prove the scripts don't depend on where they're
+    # started from, then checks the committed HTML/JSON they produce didn't change (the renders are deterministic).
+    # bionic/ is skipped: it needs the Kokoro voice model.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg libsndfile1
+      - run: pip install -r requirements.txt
+      - name: Render everything from /
+        working-directory: /
+        run: |
+          set -e
+          for s in sounds/make_sounds.py sketches/build.py sketches/servo_pulse_v2.py game/title_loop.py \
+                   game/neon-snake/make.py game/neon-snake/make2.py game/premiere/make.py ambient/make.py; do
+            echo "::group::$s"; python "$GITHUB_WORKSPACE/$s"; echo "::endgroup::"
+          done
+      - name: Committed outputs unchanged
+        run: git diff --exit-code -- '*.html' '*.json'
+      - name: Expected audio files exist
+        run: |
+          ls -l sketches/*.mp3 ambient/*.ogg game/*.ogg game/premiere/*.ogg game/neon-snake/*.ogg sounds/*.wav

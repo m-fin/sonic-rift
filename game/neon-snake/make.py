@@ -1,4 +1,5 @@
-import numpy as np, soundfile as sf, subprocess
+import numpy as np, soundfile as sf, subprocess, os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 SR=44100; BPM=150; st=60/BPM/4
 mtof=lambda n:440*2**((n-69)/12)
 def sq(f,n,d=.5): ph=(f*np.arange(n)/SR)%1; return np.where(ph<d,1.,-1.)

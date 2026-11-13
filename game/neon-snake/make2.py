@@ -1,4 +1,5 @@
-import numpy as np, soundfile as sf, subprocess
+import numpy as np, soundfile as sf, subprocess, os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 exec(open('make.py').read().split('# ---- level 1')[0])
 def build(name,bars,prog,mels,lead_d,arp,bassmode,drums,lg=.15):
     L=int(bars*16*st*SR); mix=np.zeros(L)

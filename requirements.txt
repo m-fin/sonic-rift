@@ -1,0 +1,4 @@
+numpy>=1.24
+soundfile>=0.12
+# only for bionic/vox.py (AI voice); also needs the Kokoro model files, see README
+# kokoro-onnx

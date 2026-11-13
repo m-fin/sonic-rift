@@ -1,6 +1,7 @@
 import numpy as np
 import os
 exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','game','premiere','make.py')).read().split('# (1) theme')[0])
+os.chdir(os.path.dirname(os.path.abspath(__file__)))  # write the loops next to this script
 def echo(x,d,fb,n=5):
     y=x.copy(); k=int(d*SR)
     for r in range(1,n): y+=np.roll(x,k*r)*fb**r
