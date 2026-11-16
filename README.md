@@ -23,6 +23,27 @@ build output and aren't committed. CI renders everything on each pull request.
 `bionic/vox.py` also needs `kokoro-onnx` and the Kokoro model files. Set `KOKORO_DIR` to the folder with
 `kokoro-v1.0.onnx` and `voices-v1.0.bin`, then run `bionic/compose.py`.
 
+## Checks
+
+Rendering only proves a script got to the end. `tools/check_audio.py` reads every WAV the generators leave behind and prints a table (`file`, `sr`, `ch`, `duration`, `peak dBFS`, `RMS dBFS`, `PASS/FAIL`). It exits non-zero if a file is unreadable, silent, hard-clipped, above 0 dBFS, full of NaNs, or not the sample rate, channel count, and duration that generator writes. Those durations come from the generator source (the `t(seconds)` calls and the bar counts), and `bionic/` is left out, same as CI.
+
+The sketch scripts keep their WAV next to the MP3 so the mix can be checked. Rendered audio stays untracked.
+
+Locally, with the dependencies from above (`sounds/make_sounds.py` before `sketches/servo_pulse_v2.py`):
+
+```bash
+python3 sounds/make_sounds.py
+python3 sketches/build.py
+python3 sketches/servo_pulse_v2.py
+python3 game/title_loop.py
+python3 game/neon-snake/make.py
+python3 game/neon-snake/make2.py
+python3 game/premiere/make.py
+python3 ambient/make.py
+python3 tools/check_audio.py
+python3 -m unittest discover -s tools -t . -p 'test_*.py'
+```
+
 ## How the sounds are made
 
 All the sounds are made with code. No outside samples are used. See [`sounds/SOURCES.md`](sounds/SOURCES.md) for how each one was made.

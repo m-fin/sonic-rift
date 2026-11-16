@@ -10,6 +10,7 @@ jobs:
     # Runs every generator from outside the repo (cwd = /) to prove the scripts don't depend on where they're
     # started from, then checks the committed HTML/JSON they produce didn't change (the renders are deterministic).
     # bionic/ is skipped: it needs the Kokoro voice model.
+    # tools/check_audio.py then fails the job if a WAV is silent, clipped, non-finite, or the wrong length.
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -19,6 +20,8 @@ jobs:
           python-version: '3.12'
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg libsndfile1
       - run: pip install -r requirements.txt
+      - name: Checker unit tests
+        run: python -m unittest discover -s tools -t . -p 'test_*.py'
       - name: Render everything from /
         working-directory: /
         run: |
@@ -31,4 +34,6 @@ jobs:
         run: git diff --exit-code -- '*.html' '*.json'
       - name: Expected audio files exist
         run: |
-          ls -l sketches/*.mp3 ambient/*.ogg game/*.ogg game/premiere/*.ogg game/neon-snake/*.ogg sounds/*.wav
+          ls -l sketches/*.mp3 sketches/*.wav ambient/*.ogg game/*.ogg game/premiere/*.ogg game/neon-snake/*.ogg sounds/*.wav
+      - name: Check rendered audio
+        run: python tools/check_audio.py

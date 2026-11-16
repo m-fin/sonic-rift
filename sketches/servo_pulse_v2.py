@@ -1,4 +1,4 @@
-import numpy as np, wave, subprocess, sys, os, tempfile
+import numpy as np, wave, subprocess, sys, os
 HERE=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(HERE)
 import importlib.util
 spec=importlib.util.spec_from_file_location("b",os.path.join(HERE,"build.py"))
@@ -23,7 +23,7 @@ add(snd['mech_breath'],15*bar,.35)
 add(snd['btc_blocks_melody'],20*bar,.18)
 add(snd['granular_cloud'],(S['bars']-4)*bar,.3)
 mix=np.tanh(mix*1.1); mix/=np.max(np.abs(mix))*1.05
-tmp=os.path.join(tempfile.mkdtemp(),'sp2.wav')
-with wave.open(tmp,'wb') as w: w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR);w.writeframes((mix*32767).astype('<i2').tobytes())
-subprocess.run(['ffmpeg','-y','-loglevel','error','-i',tmp,'-b:a','192k',os.path.join(HERE,'02-servo-pulse-v2.mp3')],check=True)
+wav_path=os.path.join(HERE,'02-servo-pulse-v2.wav')
+with wave.open(wav_path,'wb') as w: w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR);w.writeframes((mix*32767).astype('<i2').tobytes())
+subprocess.run(['ffmpeg','-y','-loglevel','error','-i',wav_path,'-b:a','192k',os.path.join(HERE,'02-servo-pulse-v2.mp3')],check=True)
 print(len(mix)/SR)
