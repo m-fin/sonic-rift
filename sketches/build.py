@@ -74,7 +74,7 @@ for slug,s in SONGS.items():
   a=render(s); pcm=(a*32767).astype('<i2')
   with wave.open(slug+'.wav','wb') as w: w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR);w.writeframes(pcm.tobytes())
   subprocess.run(['ffmpeg','-y','-loglevel','error','-i',slug+'.wav','-b:a','192k',slug+'.mp3'],check=True)
-  subprocess.run(['rm',slug+'.wav'])
+  # WAV stays next to the MP3 so tools/check_audio.py can measure the mix. *.wav is gitignored.
   dur=len(a)/SR; pages.append((slug,s['title'],dur))
   html=open('template.html').read().replace('__TITLE__',s['title']).replace('__DATA__',json.dumps(s))
   open(slug+'.html','w').write(html)
