@@ -10,6 +10,8 @@ jobs:
     # Runs every generator from outside the repo (cwd = /) to prove the scripts don't depend on where they're
     # started from, then checks the committed HTML/JSON they produce didn't change (the renders are deterministic).
     # bionic/ is skipped: it needs the Kokoro voice model.
+    # tools/check_sketches.py rebuilds the gallery HTML in a temp directory and fails if the committed
+    # sketches/*.html differ, or if sketches/index.html has a broken relative link.
     # tools/check_audio.py then fails the job if a WAV is silent, clipped, non-finite, or the wrong length.
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -22,6 +24,8 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Checker unit tests
         run: python -m unittest discover -s tools -t . -p 'test_*.py'
+      - name: Check sketches gallery
+        run: python tools/check_sketches.py
       - name: Render everything from /
         working-directory: /
         run: |
