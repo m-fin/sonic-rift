@@ -1,5 +1,5 @@
 import numpy as np, json, wave, subprocess, os
-os.chdir(os.path.dirname(os.path.abspath(__file__)))  # outputs go next to this script
+HERE=os.path.dirname(os.path.abspath(__file__))  # outputs go next to this script
 SR=44100
 def mtof(n): return 440*2**((n-69)/12)
 SONGS={
@@ -29,7 +29,9 @@ def lp(x,k): # one-pole lowpass
   y=np.empty_like(x); s=0.
   for i in range(len(x)): s+=k*(x[i]-s); y[i]=s
   return y
-def render(s):
+def render(s, seed=1):
+  # Local generator: the global RNG made a second run write a different WAV.
+  rng=np.random.default_rng(seed)
   beat=60/s['bpm']; bar=4*beat; L=int(s['bars']*bar*SR)+SR*2
   mix=np.zeros(L); bars=s['bars']
   def add(sig,start):
@@ -43,10 +45,10 @@ def render(s):
         n=int(.3*SR); tt=np.arange(n)/SR
         add(np.sin(2*np.pi*(45+120*np.exp(-tt*30))*tt)*np.exp(-tt*9)*.9,t)
       if q in(1,3) and not intro: # clap
-        n=int(.15*SR); add(np.random.randn(n)*np.exp(-np.arange(n)/SR*25)*.25,t)
+        n=int(.15*SR); add(rng.standard_normal(n)*np.exp(-np.arange(n)/SR*25)*.25,t)
       for h in (0,1): # hats on offbeats
         if h==1 and not intro or (intro and b>=2 and h==1):
-          n=int(.05*SR); add(np.diff(np.random.randn(n+1))*np.exp(-np.arange(n)/SR*80)*.08,t+h*beat/2)
+          n=int(.05*SR); add(np.diff(rng.standard_normal(n+1))*np.exp(-np.arange(n)/SR*80)*.08,t+h*beat/2)
     # bass 8ths
     if not intro or b>=2:
       for k in range(8):
@@ -69,15 +71,41 @@ def render(s):
   d=int(beat*.75*SR); out=mix.copy(); out[d:]+=mix[:-d]*.3; out[2*d:]+=mix[:-2*d]*.12
   out=np.tanh(out*1.2); out/=np.max(np.abs(out))*1.05
   return out
-pages=[]
-for slug,s in SONGS.items():
-  a=render(s); pcm=(a*32767).astype('<i2')
-  with wave.open(slug+'.wav','wb') as w: w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR);w.writeframes(pcm.tobytes())
-  subprocess.run(['ffmpeg','-y','-loglevel','error','-i',slug+'.wav','-b:a','192k',slug+'.mp3'],check=True)
-  # WAV stays next to the MP3 so tools/check_audio.py can measure the mix. *.wav is gitignored.
-  dur=len(a)/SR; pages.append((slug,s['title'],dur))
-  html=open('template.html').read().replace('__TITLE__',s['title']).replace('__DATA__',json.dumps(s))
-  open(slug+'.html','w').write(html)
-  print(slug,round(dur,1),'s')
-idx="<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Sonic Rift: code sketches</title></head><body style='background:#000;color:#f7931a;font-family:monospace'><h1>Sonic Rift: code sketches</h1>"+"".join(f"<p><a style='color:#f7931a' href='{p}.html'>{t}</a></p>" for p,t,_ in pages)+"</body></html>"
-open('index.html','w').write(idx)
+def gallery_html(songs=None):
+  """Pages build.py writes. JSON key order follows the SONGS literal, so the bytes stay put."""
+  songs=SONGS if songs is None else songs
+  with open(os.path.join(HERE,'template.html'),encoding='utf-8') as handle:
+    template=handle.read()
+  files={}; listed=[]
+  for slug,s in songs.items():
+    data=json.dumps(s,ensure_ascii=True,sort_keys=False,separators=(', ',': '))
+    files[slug+'.html']=template.replace('__TITLE__',s['title']).replace('__DATA__',data)
+    listed.append((slug,s['title']))
+  files['index.html']=(
+    "<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Sonic Rift: code sketches</title></head><body style='background:#000;color:#f7931a;font-family:monospace'><h1>Sonic Rift: code sketches</h1>"
+    +"".join(f"<p><a style='color:#f7931a' href='{slug}.html'>{title}</a></p>" for slug,title in listed)
+    +"</body></html>")
+  return files
+
+def write_gallery(directory, files=None):
+  """Write the gallery with LF newlines. The index has no trailing newline; the pages keep the template's."""
+  if files is None: files=gallery_html()
+  os.makedirs(directory,exist_ok=True)
+  for name,text in files.items():
+    with open(os.path.join(directory,name),'w',encoding='utf-8',newline='\n') as handle:
+      handle.write(text)
+  return files
+
+pages=[]  # servo_pulse_v2.py executes the source above this line.
+def main():
+  os.chdir(HERE)
+  for slug,s in SONGS.items():
+    a=render(s); pcm=(a*32767).astype('<i2')
+    with wave.open(slug+'.wav','wb') as w: w.setnchannels(1);w.setsampwidth(2);w.setframerate(SR);w.writeframes(pcm.tobytes())
+    subprocess.run(['ffmpeg','-y','-loglevel','error','-i',slug+'.wav','-b:a','192k',slug+'.mp3'],check=True)
+    # WAV stays next to the MP3 so tools/check_audio.py can measure the mix. *.wav is gitignored.
+    print(slug,round(len(a)/SR,1),'s')
+  write_gallery(HERE)
+
+if __name__=='__main__':
+  main()

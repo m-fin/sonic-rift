@@ -29,6 +29,15 @@ Rendering only proves a script got to the end. `tools/check_audio.py` reads ever
 
 The sketch scripts keep their WAV next to the MP3 so the mix can be checked. Rendered audio stays untracked.
 
+### Sketches
+
+`python3 sketches/build.py` rebuilds `sketches/index.html` and each sketch page from `sketches/template.html`, and writes the MP3 previews next to them. Those HTML files are committed. The noise in the mix comes from a fixed seed, and the pages embed the song data in a fixed order, so running the script again writes the same files. `python3 tools/check_sketches.py` rebuilds only the HTML in a temporary directory (it does not modify the repo) and exits non-zero if the committed pages differ — the failure prints a diff — or if a relative link in `sketches/index.html` points outside the repo or at a file that is not there.
+
+```bash
+python3 sketches/build.py
+python3 tools/check_sketches.py
+```
+
 Locally, with the dependencies from above (`sounds/make_sounds.py` before `sketches/servo_pulse_v2.py`):
 
 ```bash
@@ -41,6 +50,7 @@ python3 game/neon-snake/make2.py
 python3 game/premiere/make.py
 python3 ambient/make.py
 python3 tools/check_audio.py
+python3 tools/check_sketches.py
 python3 -m unittest discover -s tools -t . -p 'test_*.py'
 ```
 
